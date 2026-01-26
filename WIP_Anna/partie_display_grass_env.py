@@ -39,6 +39,7 @@ def secheresse(event, flag_grass, flag_display) :
 def incGrass(grass, flag_display, flag_grass) :
     while flag_display.value :
         if flag_grass.value :
+            # with lock_grass :
             sleep(0.5)
             grass.value += 1
 
@@ -55,7 +56,7 @@ def msg_display(mq, pop_prey, pop_predator, grass, flag) :
         msg_send = msg.encode()
         mq.send(msg_send, type = 3)
         sleep(0.5)
-        pop_prey.append(6)
+        pop_prey.append(6) # ligne pour le test
 
 ### Process principal :
 def env(key, pop_prey, pop_predator, grass) :
@@ -68,7 +69,7 @@ def env(key, pop_prey, pop_predator, grass) :
     mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREX)
 
 
-    ### Threads display et herbe : 
+    ### Threads pour le display et l'herbe : 
     thread_display = threading.Thread(target=msg_display, args=(mq, pop_prey, pop_predator, grass, flag_display,))
     thread_grass = threading.Thread(target=incGrass, args=(grass, flag_display, flag_grass,))
     thread_drought = threading.Thread(target=secheresse, args=(drought_event, flag_grass, flag_display,))
@@ -77,10 +78,10 @@ def env(key, pop_prey, pop_predator, grass) :
     thread_grass.start()
     thread_drought.start()
 
-
-    sleep(10)
-
+    # Ces deux lignes sont à enlever, il faudra mettre une condition quelque part pour mettre ce flag à False
+    sleep(10) 
     flag_display.value = False
+    
     thread_grass.join()
     thread_drought.join()
     thread_display.join()
