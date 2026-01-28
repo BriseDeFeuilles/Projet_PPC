@@ -2,7 +2,7 @@
 
 #import
 import sys 
-import time
+from time import sleep
 #import sysv_ipc
 import multiprocessing as mp
 import socket
@@ -13,9 +13,9 @@ import signal
 from multiprocessing.managers import BaseManager
 
 
-
-H = 10
-R = 15
+E = 8
+H = 4
+R = 10
 PORT_M = 50000
 
 class MyManager(BaseManager):
@@ -45,19 +45,16 @@ def prey():
 
     pid = os.getpid()
     born(pid)
-    energy = [10] 
+    energy = [E] 
     while energy[0] > 0 :
-        time.sleep(2)
+        sleep(2)
         if energy[0] < H :
             energy[0] += eat(data, pid, lock_prey, lock_grass, energy)
-            print("want to eat")
         if energy[0] > R :
-            have_kid()
-            energy[0] -= 10
+            have_kid(energy)
         energy[0] -= 1
-    print(data.get_prey())
-    time.sleep(1)
-    die(pid, data)
+    sleep(1)
+    die(pid, data, lock_prey)
 
 
 def born(pid) :
@@ -66,7 +63,6 @@ def born(pid) :
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         client_socket.connect((HOST, PORT))
         msg = str(pid) + ",prey,new"
-        print(msg)
         client_socket.send(msg.encode())
 
 
@@ -98,18 +94,21 @@ def deactivate(data, pid, lock_prey):
         lock_prey.release()
 
 
-def have_kid():
+def have_kid(energy):
     main()
+    energy[0] = 5
 
 
 
-def die(pid,data):
+def die(pid,data, lock_prey):
     # close things if necessary 
     # supress self from prey list
     # kill process with own pid 
-    print("die")
+    print(pid, "prey die")
+    lock_prey.acquire()
     data.kill_prey(str(pid))
-    time.sleep(2)
+    lock_prey.release()
+    sleep(2)
     os.kill(pid, signal.SIGTERM)
     quit()
 
