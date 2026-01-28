@@ -23,15 +23,16 @@ def secheresse(event, flag_grass, flag_display) :
 
 
 ### Fonctions pour les threads :
-def incGrass(grass, flag_display, flag_grass) :
+def incGrass(data, lock_grass, flag_display, flag_grass) :
     while flag_display.value :
         if flag_grass.value :
-            # with lock_grass :
-            sleep(0.5)
-            grass.value += 10
+            lock_grass.acquire()
+            data.add_grass()
+            lock_grass.release()
+        sleep(2)
 
 
-def msg_display(mq, pop_prey, pop_predator, grass, flag_display) :
+def msg_display(mq, data, lock_prey, lock_predator, lock_grass, flag_display, ) :
     """
     Envoie périodiquement un message "herbe,prey,predator"
     """
@@ -39,7 +40,29 @@ def msg_display(mq, pop_prey, pop_predator, grass, flag_display) :
     mq.send(msg_pid, type = 3)
     while flag_display.value :
         # with lock_prey and lock_predator :
-        msg = str(grass.value) + "," + str(len(pop_prey)) + "," + str(len(pop_predator))
+        lock_prey.acquire()
+        lock_predator.acquire()
+        lock_grass.acquire()
+        msg = str(data.pop_grass.value) + "," + str(len(data.pop_prey)) + "," + str(len(data.pop_predator))
+        lock_prey.release()
+        lock_predator.release()
+        lock_grass.release()
         msg_send = msg.encode()
         mq.send(msg_send, type = 3)
         sleep(0.5)
+
+def msg_display_no_mq(data, lock_prey, lock_predator, lock_grass, flag_display, ) :
+    """
+    Envoie périodiquement un message "herbe,prey,predator"
+    """
+    while flag_display.value :
+        # with lock_prey and lock_predator :
+        lock_prey.acquire()
+        lock_predator.acquire()
+        lock_grass.acquire()
+        msg = str(data.get_grass()) + "," + str(len(data.get_prey())) + "," + str(len(data.get_predator()))
+        lock_prey.release()
+        lock_predator.release()
+        lock_grass.release()
+        print(msg)
+        sleep(2)
