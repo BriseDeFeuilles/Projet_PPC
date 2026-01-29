@@ -19,7 +19,7 @@ from class_data import Data
 from Fct_mq_display_grass import stop_display, secheresse, incGrass, msg_display, msg_display_no_mq
 
 
-### Constantes de connections qui doivent être égales dans tous les programmes
+### Constantes de connexions qui doivent être égales dans tous les programmes
 HOST = "localhost"
 PORT = 6666
 
@@ -31,7 +31,7 @@ drought_event = threading.Event()
 
 
 
-### Initialisation des variables de shared memory et des locks
+### Initialisation des variables de la shared memory et des locks
 data = Data()
 lock_prey = mp.Lock()
 lock_predator = mp.Lock()
@@ -53,17 +53,17 @@ def shared_memory():
 
     manager.get_server().serve_forever()
 
-### Fonction de création du signal de secheresse
+### Fonction de création du signal de sécheresse
 def handler_signal(signum, frame) :
     drought_event.set()
 
 ### Fonction de gestion client/serveur
 def gestion_connection(data, server_socket, flag_display, lock_prey, lock_predator):
     """
-    Fonction qui accepte les connections de tous les nouveaux animaux et crée une thread qui gère la connection
+    Fonction qui accepte les connexions de tous les nouveaux animaux et crée un thread qui gère la connexion
     Paramètres :
         data: Permet l'accès à la shared memory et à ses fonctions
-        server_socket: socket serveur à laquelle se connecte les nouveaux animaux
+        server_socket: socket serveur à laquelle se connectent les nouveaux animaux
         flag_display: flag qui annonce la fin du programme
         lock_prey: lock d'accès pour lire et modifier pop_prey
         lock_predator: lock d'accès pour lire et modifier pop_predator
@@ -82,12 +82,12 @@ def gestion_connection(data, server_socket, flag_display, lock_prey, lock_predat
 # Fonction de gestion de la connexion qui reçoit un message du nouvel animal et l'ajoute à la liste
 def gestion_clients(data, client_socket, address, lock_prey, lock_predator):
     """
-    Fonction qui gère les messages reçu lors de la connexion de nouveaux animaux.
-    Le message reçu est sous le format "pid,type,event" et la fonction ajoute le pid à la liste correspondant au type de l'animal.
+    Fonction qui gère les messages reçus lors de la connexion de nouveaux animaux.
+    Le message reçu est sous le format "pid,type,event" et la fonction ajoute le pid à la liste correspondante au type de l'animal.
     Paramètres :
         data: Permet l'accès à la shared memory et à ses fonctions
         client_socket: socket de l'animal
-        address: address du client prévu pour leur envoyé des messages
+        address: adresse du client prévu pour lui envoyé des messages
         lock_prey: lock d'accès pour lire et modifier pop_prey
         lock_predator: lock d'accès pour lire et modifier pop_predator
     """
@@ -108,9 +108,9 @@ def gestion_clients(data, client_socket, address, lock_prey, lock_predator):
 
 ### Process principal
 def env():
-    ### Connection au storage manager
+    ### Connexion au storage manager
     manager = MyManager(address=("localhost", PORT_M), authkey=b"clef")
-    while True: # Cette boucle s'assure que la connection a lieu
+    while True: # Cette boucle s'assure que la connexion a lieu
         try:
             manager.connect()
             break
@@ -133,19 +133,19 @@ def env():
     lock_predator = manager.get_lock_predator()
     lock_grass = manager.get_lock_grass()
     
-    ### Initialisation du serveur pour la connection des process animaux
+    ### Initialisation du serveur pour la connexion des process animaux
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((HOST, PORT))
     server_socket.setblocking(False)
 
-    ### Création des threads de gestion de différents éléments et evenement
+    ### Création des threads de gestion de différents éléments et évenements
 
     # Thread d'affichage
     thread_display = threading.Thread(target=msg_display, args=(mq, data, lock_prey, lock_predator, lock_grass, flag_display,))  
     # Thread de gestion de la pousse de l'herbe
     thread_grass =  threading.Thread(target=incGrass, args = (data, lock_grass, flag_display, flag_grass))
-    # Thread de gestion de secheresse avec son signal
+    # Thread de gestion de sécheresse avec son signal
     thread_drought = threading.Thread(target=secheresse, args=(drought_event, flag_grass, flag_display,))
     # Thread de gestion des arrivées de nouveaux animaux
     thread_connection = threading.Thread(target=gestion_connection, args=(data, server_socket, flag_display, lock_prey, lock_predator))
@@ -159,7 +159,7 @@ def env():
     sleep(10)
 
     ### Boucle qui s'assure de la présence d'animaux des deux types
-    ### Permet de finir la simulation si non via flag_display
+    ### Permet de finir la simulation sinon via flag_display
     while flag_display.value == True :
         sleep(3)
         lock_prey.acquire()
@@ -211,13 +211,14 @@ if __name__ == "__main__":
 
     sleep(2)
 
-    # Création de proies et de prédateurs aussi ajoutable manuellement  en lançant les programmes prey.py et predator.py
+    # Création de proies et de prédateurs aussi ajoutables manuellement  en lançant les programmes prey.py et predator.py
     prey.main()
     predator.main()
     display.main()
 
     p_env.join()
     p_memory.join()
+
 
 
 
