@@ -37,6 +37,7 @@ def main():
 
 ### Fonction principale
 def predator():
+    ### Connection à la shared memory
     manager = MyManager(address=("localhost", PORT_M), authkey=b"clef")
     manager.connect()
 
@@ -131,6 +132,7 @@ def die(pid,data,lock_predator):
 ### Lance la fonction main() quand le programme est executé.
 if __name__ == "__main__":
     main()
+
 
 
 
