@@ -18,6 +18,7 @@ H = 4
 R = 10
 PORT_M = 50000
 
+### Préparation de la récupréation de la shared memory et des locks 
 class MyManager(BaseManager):
     pass
 
@@ -27,17 +28,20 @@ MyManager.register("get_lock_predator")
 MyManager.register("get_lock_grass")
 
 
+### Fonciton qui lance un nouveau preocess prey
 def main():
 
     p = mp.Process(target=prey, args=())
     p.start()
 
 
-
+### Fonction principale
 def prey():
+    ### Connection à la shared memory
     manager = MyManager(address=("localhost", PORT_M), authkey=b"clef")
     manager.connect()
 
+    ### Récupération dans le process des accès aux fonctions et des locks de la shared memory
     data = manager.get_Data()
     lock_prey = manager.get_lock_prey()
     lock_predator = manager.get_lock_predator()
@@ -45,7 +49,11 @@ def prey():
 
     pid = os.getpid()
     born(pid)
+
+    # energy est une liste dont le premier élément est un entier pour pouvoir être modifié par toutes les fonctions sans avoir de return.
     energy = [E] 
+
+    ### Tant que la proie à de l'énergie, elle essaye de manger si son énergie est en dessous de H et se reproduit si son énergie est en dessus de R
     while energy[0] > 0 :
         sleep(2)
         if energy[0] < H :
@@ -54,9 +62,13 @@ def prey():
             have_kid(energy)
         energy[0] -= 1
     sleep(1)
+
+    ### la proie meurt quand elle n'as plus n'énergie
     die(pid, data, lock_prey)
 
-
+### Fonction qui annonce à l'environnement via une relation client/serveur l'existence de la proie lors de sa création 
+# Le message envoyé est sous le format "pid,type,event" avec le pid du process proie et type = "proie"
+# event = "new" car la proie vient de naitre
 def born(pid) :
     HOST = "localhost"
     PORT = 6666
@@ -65,7 +77,9 @@ def born(pid) :
         msg = str(pid) + ",prey,new"
         client_socket.send(msg.encode())
 
-
+### Fonction qui crée une thread pour activer la proie lorsqu'elle a faim, essaie de manger si lock_grass est libre.
+# Si il n'est pas libre, la proie reste active et revient vers sa fonction principale, si elle ne peux pas manger trop souvent, elle meurt de faim.
+# Si le lock est libre, elle mange de l'herbe et son énergie augmente de "food" puis son état revient à passif.
 def eat(data, pid, lock_prey, lock_grass, energy) :
     thread_activate = threading.Thread(target=activate, args=(data, pid, lock_prey))
     thread_activate.start()
@@ -79,6 +93,8 @@ def eat(data, pid, lock_prey, lock_grass, energy) :
     
     return food
 
+
+### Fonctions qui change l'état de la proie et gère les locks.
 def activate(data, pid, lock_prey):
     lock_prey.acquire()
     try :
@@ -94,12 +110,13 @@ def deactivate(data, pid, lock_prey):
         lock_prey.release()
 
 
+### Fonciton qui cause la création d'un nouveau process prey et réduit l'énergie de la proie actuelle.
 def have_kid(energy):
     main()
     energy[0] = 5
 
 
-
+### Fonction qui gère la mort de la proie : cause la suppression de sa présence dans la liste partagé puis tue son propre process.
 def die(pid,data, lock_prey):
     # close things if necessary 
     # supress self from prey list
@@ -112,7 +129,7 @@ def die(pid,data, lock_prey):
     os.kill(pid, signal.SIGTERM)
     quit()
 
-
+### Lance la fonction main() quand le programme est executé.
 if __name__ == "__main__":
     main()
 
@@ -126,3 +143,4 @@ thread(live(energy, "prey"))
 
 send_message_die()
 """
+
