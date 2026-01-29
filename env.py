@@ -19,7 +19,7 @@ from class_data import Data
 from Fct_mq_display_grass import stop_display, secheresse, incGrass, msg_display, msg_display_no_mq
 
 
-### Constantes de connections qui doivent être égale dans tous les programmes
+### Constantes de connections qui doivent être égales dans tous les programmes
 HOST = "localhost"
 PORT = 6666
 
@@ -218,6 +218,7 @@ if __name__ == "__main__":
 
     p_env.join()
     p_memory.join()
+
 
 
 
