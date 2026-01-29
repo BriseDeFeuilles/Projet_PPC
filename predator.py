@@ -38,6 +38,7 @@ def predator():
     manager = MyManager(address=("localhost", PORT_M), authkey=b"clef")
     manager.connect()
 
+    ### Récupération dans le process des accès aux fonctions et des locks de la shared memory
     data = manager.get_Data()
     lock_prey = manager.get_lock_prey()
     lock_predator = manager.get_lock_predator()
@@ -115,4 +116,5 @@ def die(pid,data,lock_predator):
 
 if __name__ == "__main__":
     main()
+
 
