@@ -12,7 +12,7 @@ def stop_display(mq) :
 
     
 ### Fonction de gestion de la sécheresse lancé en thread.
-# Lorsque le bouton de l'affichage est pressé, change flag_grass à false pendant 5 secondes.
+# Lorsque le bouton de l'affichage est pressé, la fonction reçoit un signal et change flag_grass à false pendant 5 secondes.
 def secheresse(event, flag_grass, flag_display) :
     while flag_display.value :
         event.wait()
@@ -54,5 +54,6 @@ def msg_display(mq, data, lock_prey, lock_predator, lock_grass, flag_display, ) 
         msg_send = msg.encode()
         mq.send(msg_send, type = 3)
         sleep(0.5)
+
 
 
