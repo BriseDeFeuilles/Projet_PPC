@@ -48,15 +48,14 @@ MyManager.register("get_lock_grass", callable=lambda: lock_grass)
 
 ### Fonction de création de storage manager à appeler en process
 def shared_memory():
-
     manager = MyManager(address=("localhost", PORT_M), authkey=b"clef")
     print("manager started")
 
     manager.get_server().serve_forever()
 
+### Fonction de création du signal de secheresse
 def handler_signal(signum, frame) :
     drought_event.set()
-
 
 ### Fonction de gestion client/serveur
 def gestion_connection(data, server_socket, flag_display, lock_prey, lock_predator):
@@ -80,8 +79,18 @@ def gestion_connection(data, server_socket, flag_display, lock_prey, lock_predat
                 thread_client.join()
                 
 
-# Fonction de gestion de la connection qui reçoit un message du nouvel animal et l'ajoute à la liste
+# Fonction de gestion de la connexion qui reçoit un message du nouvel animal et l'ajoute à la liste
 def gestion_clients(data, client_socket, address, lock_prey, lock_predator):
+    """
+    Fonction qui gère les messages reçu lors de la connexion de nouveaux animaux.
+    Le message reçu est sous le format "pid,type,event" et la fonction ajoute le pid à la liste correspondant au type de l'animal.
+    Paramètres :
+        data: Permet l'accès à la shared memory et à ses fonctions
+        client_socket: socket de l'animal
+        address: address du client prévu pour leur envoyé des messages
+        lock_prey: lock d'accès pour lire et modifier pop_prey
+        lock_predator: lock d'accès pour lire et modifier pop_predator
+    """
     msg = client_socket.recv(64).decode()
     print(msg)
     pid, type, event = msg.split(",")
@@ -202,13 +211,14 @@ if __name__ == "__main__":
 
     sleep(2)
 
-    # Création de proies et de prédateurs aussi ajoutable manuelement en lançant les programmes prey.py et predator.py
+    # Création de proies et de prédateurs aussi ajoutable manuellement  en lançant les programmes prey.py et predator.py
     prey.main()
     predator.main()
     display.main()
 
     p_env.join()
     p_memory.join()
+
 
 
 
