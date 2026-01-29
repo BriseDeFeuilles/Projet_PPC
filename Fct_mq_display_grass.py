@@ -11,8 +11,8 @@ def stop_display(mq) :
 
 
     
-### Fonction de gestion de la sécheresse lancé en thread.
-# Lorsque le bouton de l'affichage est pressé, la fonction reçoit un signal et change flag_grass à false pendant 5 secondes.
+### Fonction de gestion de la sécheresse lancée en thread.
+# Lorsque le bouton de l'affichage est pressé, la fonction reçoit un signal et change flag_grass à False pendant 5 secondes.
 def secheresse(event, flag_grass, flag_display) :
     while flag_display.value :
         event.wait()
@@ -26,7 +26,7 @@ def secheresse(event, flag_grass, flag_display) :
 
 
 ### Fonction lancée en thread qui gère la croissance de l'herbe, augmente la quantité d'herbe de 1 toutes les 2 secondes
-# sauf si il y a une sécheresse annoncé par le flag_grass.
+# sauf s'il y a une sécheresse annoncée par le flag_grass.
 def incGrass(data, lock_grass, flag_display, flag_grass) :
     while flag_display.value :
         if flag_grass.value :
@@ -36,7 +36,7 @@ def incGrass(data, lock_grass, flag_display, flag_grass) :
         sleep(2)
 
 
-### Fonction lancée en thread qui envoie périodiquement un message "herbe,prey,predator" au display pour l'affichage via message queue.
+### Fonction lancée en thread qui envoie périodiquement un message "herbe,prey,predator" au display pour l'affichage via une message queue.
 def msg_display(mq, data, lock_prey, lock_predator, lock_grass, flag_display, ) :
     """
     Envoie périodiquement un message "herbe,prey,predator"
@@ -54,6 +54,7 @@ def msg_display(mq, data, lock_prey, lock_predator, lock_grass, flag_display, ) 
         msg_send = msg.encode()
         mq.send(msg_send, type = 3)
         sleep(0.5)
+
 
 
 
