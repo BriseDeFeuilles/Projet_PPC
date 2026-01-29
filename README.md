@@ -17,11 +17,11 @@ Il est possible de tester différentes simulations en modifiant les valeurs lié
 
 Tous les fichier suivant doivent se trouver dans le même dossier :
 
-env.py
-display.py
-prey.py
-predator.py
-Fct_mq_display_grass.py
-class_data.py
-class_display.py
--
+- env.py
+- display.py
+- prey.py
+- predator.py
+- Fct_mq_display_grass.py
+- class_data.py
+- class_display.py
+
