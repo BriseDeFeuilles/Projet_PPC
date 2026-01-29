@@ -28,7 +28,7 @@ MyManager.register("get_lock_predator")
 MyManager.register("get_lock_grass")
 
 
-### Fonction qui lance un nouveau preocess predator
+### Fonction qui lance un nouveau process predator
 def main():
 
     p = mp.Process(target=predator, args=())
@@ -129,6 +129,7 @@ def die(pid,data,lock_predator):
 ### Lance la fonction main() quand le programme est exécuté.
 if __name__ == "__main__":
     main()
+
 
 
 
