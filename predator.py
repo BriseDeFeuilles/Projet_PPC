@@ -18,7 +18,7 @@ H = 20
 R = 25
 PORT_M = 50000
 
-### Préparation de la récupréation de la shared memory et des locks 
+### Préparation de la récupération de la shared memory et des locks 
 class MyManager(BaseManager):
     pass
 
@@ -28,7 +28,7 @@ MyManager.register("get_lock_predator")
 MyManager.register("get_lock_grass")
 
 
-### Fonciton qui lance un nouveau preocess predator
+### Fonction qui lance un nouveau preocess predator
 def main():
 
     p = mp.Process(target=predator, args=())
@@ -37,7 +37,7 @@ def main():
 
 ### Fonction principale
 def predator():
-    ### Connection à la shared memory
+    ### Connexion à la shared memory
     manager = MyManager(address=("localhost", PORT_M), authkey=b"clef")
     manager.connect()
 
@@ -53,7 +53,7 @@ def predator():
     # energy est une liste dont le premier élément est un entier pour pouvoir être modifié par toutes les fonctions sans avoir de return.
     energy = [E] 
 
-    ### Tant que le prédateur à de l'énergie, il essaye de manger si son énergie est en dessous de H et se reproduit si son énergie est en dessus de R
+    ### Tant que le prédateur a de l'énergie, il essaie de manger si son énergie est en dessous de H et se reproduit si son énergie est au-dessus de R.
     while energy[0] > 0 :
         sleep(2)
         if energy[0] < H :
@@ -63,12 +63,12 @@ def predator():
         energy[0] -= 1
     sleep(1)
 
-    ### le prédateur meurt quand il n'as plus n'énergie
+    ### le prédateur meurt quand il n'a plus d'énergie
     die(pid, data, lock_predator)
 
 ### Fonction qui annonce à l'environnement via une relation client/serveur l'existence du prédateur lors de sa création 
 # Le message envoyé est sous le format "pid,type,event" avec le pid du process prédateur et type = "predator"
-# event = "new" car le prédateur vient de naitre
+# event = "new" car le prédateur vient de naître.
 def born(pid) :
     HOST = "localhost"
     PORT = 6666
@@ -78,8 +78,8 @@ def born(pid) :
         client_socket.send(msg.encode())
 
 
-### Fonction qui crée une thread pour activer le prédateur lorsqu'il a faim, essaie de manger si lock_prey est libre.
-# Si il n'est pas libre, le prédateur reste actif et revient vers sa fonction principale, si il ne peux pas manger trop souvent, il meurt de faim.
+### Fonction qui crée un thread pour activer le prédateur lorsqu'il a faim, essaie de manger si lock_prey est libre.
+# Si il n'est pas libre, le prédateur reste actif et revient vers sa fonction principale, s'il ne peut pas manger trop souvent, il meurt de faim.
 # Si le lock est libre, il mange une proie et son énergie augmente de "food" puis son état revient à passif.
 def eat(data, pid, lock_prey, lock_predator, energy) :
     thread_activate = threading.Thread(target=activate, args=(data, pid, lock_predator))
@@ -94,7 +94,7 @@ def eat(data, pid, lock_prey, lock_predator, energy) :
     return food
 
 
-### Fonctions qui change l'état du prédateur et gère les locks.
+### Fonctions qui changent l'état du prédateur et gèrent les locks.
 def activate(data, pid, lock_predator):
     lock_predator.acquire()
     try :
@@ -110,17 +110,14 @@ def deactivate(data, pid, lock_predator):
         lock_predator.release()
 
 
-### Fonciton qui cause la création d'un nouveau process predator et réduit l'énergie du prédateur actuel.
+### Fonction qui cause la création d'un nouveau process predator et réduit l'énergie du prédateur actuel.
 def have_kid(energy):
     main()
     energy[0] = 20
 
 
-### Fonction qui gère la mort du prédateur : cause la suppression de sa présence dans la liste partagé puis tue son propre process.
+### Fonction qui gère la mort du prédateur : cause la suppression de sa présence dans la liste partagée, puis tue son propre process.
 def die(pid,data,lock_predator):
-    # close things if necessary 
-    # supress self from prey list
-    # kill process with own pid 
     print(pid, "predator die")
     lock_predator.acquire()
     data.kill_predator(str(pid))
@@ -129,9 +126,10 @@ def die(pid,data,lock_predator):
     os.kill(pid, signal.SIGTERM)
     quit()
 
-### Lance la fonction main() quand le programme est executé.
+### Lance la fonction main() quand le programme est exécuté.
 if __name__ == "__main__":
     main()
+
 
 
 
