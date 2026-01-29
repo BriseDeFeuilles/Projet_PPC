@@ -8,7 +8,7 @@ class Data:
         self.pop_predator = {}
         self.pop_grass = 0        
 
-    ### Fonctions qui renvoient les variables partagé en shared memory
+    ### Fonctions qui renvoient les variables partagées en shared memory
     # On ne peut pas accéder à ces variables directement depuis data, il faut passer par une fonction
     # Les locks respectifs sont activés hors des fonctions
     def get_prey(self):
@@ -41,7 +41,7 @@ class Data:
     def add_grass(self):
         self.pop_grass += 1
 
-    ### Fonction qui, si il y a de l'herbe, enlève 1 à la quantité d'herbe et renvoie une valeur de nourriture.
+    ### Fonction qui, s'il y a de l'herbe, enlève 1 à la quantité d'herbe et renvoie une valeur de nourriture.
     # Le lock_grass est activé hors de la fonction
     def eat_grass(self):
         food = 0
@@ -50,7 +50,7 @@ class Data:
             food = random.randint(1, 10)
         return(food)
 
-    ### Fonction qui parcoure la liste de proie puis tue la première proie active et renvoie une valeur de nourriture.
+    ### Fonction qui parcourt la liste de proies puis tue la première proie active et renvoie une valeur de nourriture.
     # Le lock_prey est activé hors de la fonction
     def eat_prey(self):
         food = 0
@@ -83,4 +83,5 @@ class Data:
             os.kill(int(pid), signal.SIGTERM)
         for pid in self.pop_predator.keys():
             os.kill(int(pid), signal.SIGTERM)
+
 
