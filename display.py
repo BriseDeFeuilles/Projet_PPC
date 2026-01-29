@@ -47,9 +47,11 @@ def display(key) :
     fenetre.mainloop()
     t_mq.join()
 
-
-if __name__ == "__main__" :
+def main() :
     d = Process(target=display, args=(key,))
     d.start()
     d.join()
+
+if __name__ == "__main__" :
+    main()
     
