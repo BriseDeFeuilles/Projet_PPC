@@ -3,11 +3,13 @@
 import tkinter as tk
 import os
 import signal
+import prey 
+import predator
 
 class Display(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        self.grass = 100
+        self.grass = 0
         self.prey = 0
         self.ptor = 0
         self.pid_env = None
@@ -39,18 +41,24 @@ class Display(tk.Tk):
         self.boutonDrought.pack()
 
         ### Bouton pour fermer la fenêtre :
-        self.boutonQuit = tk.Button(self, text="Quit", command = self.quit)
+        self.boutonQuit = tk.Button(self, text="Quit")
+        self.boutonQuit.bind("<Button-1>", self.closeWindow)
         self.boutonQuit.pack()
     
     ### Fonctions associées aux boutons :
     def incPrey(self, event) :
-        exec(open("prey.py").read())
+        prey.main()
     
     def incPtor(self, event) :
-        exec(open("predator.py").read())
+        predator.main()
     
     def sendSignal(self, event) :
         os.kill(self.pid_env, signal.SIGUSR1)
+    
+    def closeWindow(self, event):
+        os.kill(self.pid_env, signal.SIGUSR1)
+        self.quit()
+        self.destroy()
 
     
     ### Fonction pour modifier la fenêtre :
