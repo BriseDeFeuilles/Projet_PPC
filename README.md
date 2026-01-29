@@ -8,7 +8,7 @@ Une proie et un prédateur sont généré à l'initialisation.
 
 Toutes les exécutions de prey.py et predator.py qui on lieu lorsque le process env est en route crée un process animal qui rejoint la simulation.
 
-Lorsqu'il y a 0 proie ou 0 prédateur, la majorité des process et thread prennent fin.
+Lorsqu'il y a 0 proies ou 0 prédateurs, la majorité des process et thread prennent fin.
 
 La fenêtre d'affichage est interactive et permet de créer de nouveaux process animaux et d'activer un épisode de sécheresse.
 
