@@ -23,7 +23,7 @@ from Fct_mq_display_grass import stop_display, secheresse, incGrass, msg_display
 HOST = "localhost"
 PORT = 6666
 
-PORT_M = 50001
+PORT_M = 50000
 
 
 key = 777
@@ -209,5 +209,6 @@ if __name__ == "__main__":
 
     p_env.join()
     p_memory.join()
+
 
 
