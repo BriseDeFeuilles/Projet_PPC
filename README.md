@@ -15,7 +15,7 @@ La fenêtre d'affichage est interactive et permet de créer de nouveaux process 
 Il est possible de tester différentes simulations en modifiant les valeurs liées aux énergies des proies et prédateurs dans les fichier prey.py et predator.py. E correspond à l'énergie initiale de l'animal, H à la limite d'énergie de faim et R à la limite d'énergie de reproduction.
 
 
-Tous les fichier suivants doivent se trouver dans le même dossier :
+Tous les fichiers suivants doivent se trouver dans le même dossier :
 
 - env.py
 - display.py
